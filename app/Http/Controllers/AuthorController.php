@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Author;
+
 class AuthorController extends Controller
 {
     /**
@@ -13,11 +14,10 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $author=Author::all();
         return response()->json([
-            'status' => 200,
-            'data' => $author
-        ], 200);
+            "message" => "Daftar Author",
+            "data" => Author::all()
+        ]);
     }
 
     /**
@@ -39,18 +39,14 @@ class AuthorController extends Controller
     public function store(Request $request)
     {
         $author = new Author();
-        $author->name = $request->input('name');
-        $author->date_of_birth = $request->input('date_of_birth');
-        $author->place_of_birth = $request->input('place_of_birth');
-        $author->gender = $request->input('gender');
-        $author->email = $request->input('email');
-        $author->hp = $request->input('hp');
+        $author->name = $request->name;
+        $author->date_of_birth = $request->date_of_birth;
+        $author->place_of_birth = $request->place_of_birth;
+        $author->gender = $request->gender;
+        $author->email = $request->email;
+        $author->hp = $request->hp;
         $author->save();
-
-        return response()->json([
-            'status' => 201,
-            'data' => $author
-        ], 201);
+        return response()->json($author, 202);
     }
 
     /**
@@ -62,18 +58,7 @@ class AuthorController extends Controller
     public function show($id)
     {
         $author = Author::find($id);
-
-        if($author){
-            return response()->json([
-                'status' => 200,
-                'data' => $author
-            ], 200);
-        }else{
-            return response()->json([
-                'status' => 404,
-                'message' => 'id ' . $id . ' tidak ditemukan.'
-            ], 404);
-        }
+        return response()->json($author);
     }
 
     /**
@@ -97,25 +82,14 @@ class AuthorController extends Controller
     public function update(Request $request, $id)
     {
         $author = Author::find($id);
-        if($author){
-            $author->name = $request->name ? $request->name : $author->name;
-            $author->date_of_birth = $request->date_of_birth ? $request->date_of_birth : $author->date_of_birth;
-            $author->place_of_birth = $request->place_of_birth ? $request->place_of_birth : $author->place_of_birth;
-            $author->gender = $request->gender ? $request->gender : $author->gender;
-            $author->email = $request->email ? $request->email : $author->email;
-            $author->hp = $request->hp ? $request->hp : $author->hp;
-            $author->save();
-
-            return response()->json([
-                'status' => 200,
-                'data' => $author
-            ], 200);
-        }else{
-            return response()->json([
-                'status' => 404,
-                'message' => 'id ' . $id . ' tidak ditemukan, gagal update data.'
-            ], 404);
-        }
+        $author->name = $request->name;
+        $author->date_of_birth = $request->date_of_birth;
+        $author->place_of_birth = $request->place_of_birth;
+        $author->gender = $request->gender;
+        $author->email = $request->email;
+        $author->hp = $request->hp;
+        $author->save();
+        return response()->json($author, 202);
     }
 
     /**
@@ -126,18 +100,14 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        $author = Author::where("id", $id)->first();
-        if($author){
-            $author->delete();
-            return response()->json([
-                'status' => 200,
-                'data' => $author
-            ], 200);
-        }else{
-            return response()->json([
-                'status' => 404,
-                'message' => 'id ' . $id . ' tidak ditemukan, gagal menghapus data.'
-            ], 404);
-        }
+        $author = Author::findOrFail($id);
+        $author->delete();
+        return response()->json([
+            "message" => "Data Author Telah dihapus",
+            "data" => $author
+        ]);
+    }
+    public function search($name){
+        return Author::where('name', 'like', '%'.$name.'%')->get();
     }
 }

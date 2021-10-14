@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
 use Illuminate\Http\Request;
+use App\Models\Book;
 
 class BookController extends Controller
 {
@@ -14,11 +14,7 @@ class BookController extends Controller
      */
     public function index()
     {
-        $book=Book::all();
-        return response()->json([
-            'status' => 200,
-            'data' => $book
-        ], 200);
+        return Book::get();
     }
 
     /**
@@ -28,7 +24,7 @@ class BookController extends Controller
      */
     public function create()
     {
-       
+        //
     }
 
     /**
@@ -39,13 +35,14 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $book = new Book();
-        $book->title = $request->input('title');
-        $book->description = $request->input('description');
-        $book->author = $request->input('author');
-        $book->publisher = $request->input('publisher');
-        $book->date_of_issue = $request->input('date_of_issue');
-        $book->save();
+        return Book::create([//
+            'title' => $request->title,
+            'description' => $request->description,
+            'author' => $request->author,
+            'publisher' => $request->publisher,
+            'date_of_issue' => $request->date_of_issue
+
+        ]);
     }
 
     /**
@@ -56,7 +53,7 @@ class BookController extends Controller
      */
     public function show($id)
     {
-        //
+        return Book::find($id);
     }
 
     /**
@@ -79,7 +76,15 @@ class BookController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $book = Book::find($id);
+        $book->title = $request->title;
+        $book->description = $request->description;
+        $book->author = $request->author;
+        $book->publisher = $request->publisher;
+        $book->author = $request->author;
+        $book->date_of_issue = $request->date_of_issue;
+        $book->save();
+        return response()->json($book, 420); 
     }
 
     /**
@@ -90,6 +95,14 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $book = Book::findOrFail($id);
+        $book->delete();
+        return response()->json([
+            "message" => "Data Buku Telah dihapus",
+            "data" => $book
+        ]);
+    }
+    public function search($title){
+        return Book::where('title', 'like', '%'.$title.'%')->get();
     }
 }
